@@ -51,7 +51,6 @@ final class CoreDataManager: ICoreDataManager {
     func fetchItem() -> [Entity] {
         let request = Entity.fetchRequest()
         guard let objects = try? persistentContainer.viewContext.fetch(request) else {
-            dump("Ошибка")
             return []
         }
         self.saveContext()
@@ -77,12 +76,10 @@ final class CoreDataManager: ICoreDataManager {
     func deleteAll() {
         let request = Entity.fetchRequest()
         guard let objects = try? persistentContainer.viewContext.fetch(request) else {
-            dump("Ошибка")
             return
         }
         objects.forEach { item in
             persistentContainer.viewContext.delete(item)
-            dump("Успешно")
         }
         self.saveContext()
     }
@@ -95,7 +92,6 @@ final class CoreDataManager: ICoreDataManager {
     func updateItem(item: Todo, todo: String, completed: Bool) {
         let request = Entity.fetchRequest()
         guard let objects = try? persistentContainer.viewContext.fetch(request) else {
-            dump("Ошибка")
             return
         }
         
@@ -111,7 +107,6 @@ final class CoreDataManager: ICoreDataManager {
     func deleteitem(id: Int) {
         let request = Entity.fetchRequest()
         guard let objects = try? persistentContainer.viewContext.fetch(request) else {
-            dump("Ошибка")
             return
         }
         

@@ -9,16 +9,18 @@ import XCTest
 @testable import TodoListForTest
 
 final class MockInteractor: ITodoListInteractor {
+    
     var presenter: ITodoListPresenter
+    var coreManager: ICoreDataManager
     
-    var todos: [Todo] = []
-    
-    init(presenter: ITodoListPresenter) {
+    init(presenter: ITodoListPresenter, coreManager: ICoreDataManager) {
         self.presenter = presenter
+        self.coreManager = coreManager
     }
     
     func fetchData() {
-        self.presenter.present(items: todos)
+        let objects = self.coreManager.fetchItem()
+        self.presenter.present(items: objects)
     }
     
     func deleteAll() {
@@ -26,30 +28,25 @@ final class MockInteractor: ITodoListInteractor {
     }
     
     func updateTask(item: TodoListForTest.Todo, body: String, completed: Bool) {
-        for index in 0...todos.count - 1 {
-            var object = todos[index]
-            if object.id == item.id {
-                object.todo = body
-                object.completed = completed
-            }
-        }
-        self.presenter.present(items: todos)
+        self.coreManager.updateItem(item: item, todo: body, completed: completed)
+        let objects = self.coreManager.fetchItem()
+        self.presenter.present(items: objects)
     }
     
     func saveTask(id: Int, body: String) {
-        let item = Todo(id: id, todo: body, completed: false, userID: id)
-        self.todos.append(item)
-        self.presenter.present(items: todos)
+        self.coreManager.addItem(
+            id: id,
+            completed: false,
+            todo: body
+        )
+        let objects = self.coreManager.fetchItem()
+        self.presenter.present(items: objects)
     }
     
     func deleteItem(id: Int) {
-        for index in 0...todos.count - 1 {
-            let item = todos[index]
-            if item.id == id {
-                self.todos.remove(at: index)
-            }
-        }
-        self.presenter.present(items: todos)
+        self.coreManager.deleteitem(id: id)
+        let objects = self.coreManager.fetchItem()
+        self.presenter.present(items: objects)
     }
     
     func addTask() {
@@ -69,8 +66,8 @@ final class MockPresenter: ITodoListPresenter {
         self.view = view
     }
     
-    func present(items: [TodoListForTest.Todo]) {
-        self.view.render(items: items)
+    func present(items: [TodoListForTest.Entity]) {
+        self.view.render(items: self.conversion(entity: items))
     }
     
     func addTask() {
@@ -83,6 +80,18 @@ final class MockPresenter: ITodoListPresenter {
     
     func showErrorAlert(text: String) {
         // Show error alert load
+    }
+    
+    func conversion(entity: [Entity]) -> [Todo] {
+        let todos = entity.map {
+            Todo(
+                id: Int($0.id),
+                todo: $0.todo,
+                completed: $0.completed,
+                userID: 0
+            )
+        }
+        return todos
     }
 }
 
@@ -118,22 +127,23 @@ final class TodoListForTestTests: XCTestCase {
     var sut: MockView!
     var sutPresenet: MockPresenter!
     var sutInteractor: MockInteractor!
+    var coreManager: ICoreDataManager!
 
     override func setUpWithError() throws {
-        var todos = [
-            Todo(id: 10, todo: "10", completed: true, userID: 10)
-        ]
         sut = MockView()
         sutPresenet = MockPresenter(view: sut)
-        sutInteractor = MockInteractor(presenter: sutPresenet)
-        sutInteractor.todos = todos
+        coreManager = CoreDataManager()
+        coreManager.deleteAll()
+        sutInteractor = MockInteractor(presenter: sutPresenet, coreManager: coreManager)
         sut.interactor = sutInteractor
     }
 
     override func tearDownWithError() throws {
+        self.coreManager.deleteAll()
         sut = nil
         sutPresenet = nil
         sutInteractor = nil
+        coreManager = nil
     }
 
     func testModuleIsNotNil() throws {
@@ -178,8 +188,8 @@ final class TodoListForTestTests: XCTestCase {
         sut.interactor?.saveTask(id: todo.id, body: todo.todo)
         sut.interactor?.updateTask(item: todo, body: newBody, completed: newStatus)
         let newTodo = sut.items.first { $0.id == todo.id }
-        
-        XCTAssertEqual(todo.todo, newTodo?.todo)
         XCTAssertEqual(todo.id, newTodo?.id)
+        XCTAssertEqual(todo.todo, newTodo?.todo)
+        
     }
 }

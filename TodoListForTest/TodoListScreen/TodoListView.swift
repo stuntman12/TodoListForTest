@@ -152,7 +152,7 @@ private extension TodoListView {
         let heightItem: CGFloat = 1
         
         let widthGroup: CGFloat = 1
-        let heightGroup: CGFloat = 0.1
+        let heightGroup: CGFloat = 0.12
         
         let layoutConfiguration = UICollectionViewCompositionalLayoutConfiguration()
         let layout = UICollectionViewCompositionalLayout(sectionProvider: {
@@ -224,17 +224,19 @@ private extension TodoListView {
         let saveButton = UIAlertAction(
             title: "Сохранить",
             style: .default) { [weak self] _ in
-                let id = Int.random(in: 1...1000)
                 guard let textField = alert.textFields?[0] else { return }
-                self?.interactor?.saveTask(id: id, body: textField.text ?? "Добавьте задачу")
+                let id = Int.random(in: 1...1000)
+                if textField.hasText {
+                    self?.interactor?.saveTask(id: id, body: textField.text!)
+                } else {
+                    self?.router?.showAlertErrorLoad(text: "Не ввели текст")
+                }
             }
         
         alert.addAction(saveButton)
-        
         alert.addTextField { textField in
             textField.placeholder = "Что нужно сделать?"
         }
-        
         
         present(alert, animated: true)
     }
@@ -249,8 +251,16 @@ private extension TodoListView {
         
         let editButton = UIAlertAction(title: "Изменить", style: .default) { [weak self] textField in
             guard let TaskBodyTextField = alert.textFields?.first?.text else { return }
-            self?.interactor?.updateTask(item: taskForIndexPatch, body: TaskBodyTextField, completed: taskForIndexPatch.completed)
-            self?.interactor?.fetchData()
+            if TaskBodyTextField.isEmpty {
+                self?.router?.showAlertErrorLoad(text: "Отсутствует текст")
+            } else {
+                self?.interactor?.updateTask(
+                    item: taskForIndexPatch,
+                    body: TaskBodyTextField,
+                    completed: taskForIndexPatch.completed
+                )
+                self?.interactor?.fetchData()
+            }
         }
         
         let completedButton = UIAlertAction(

@@ -11,6 +11,7 @@ final class TodoListCell: UICollectionViewCell {
     private let labelDescr = UILabel()
     private let labelTitle = UILabel()
     private let labelStatus = UILabel()
+    private let buttonSeparator = UIView()
     
     private let buttonConstraint: CGFloat = 8
     private let horizontalConstraint: CGFloat = 16
@@ -36,17 +37,21 @@ private extension TodoListCell {
     func settingCell() {
         contentView.backgroundColor = .white
         settingLabel()
+        settingButtonSeparator()
     }
     
     func settingLabel() {
         // Setting Title label
-        labelTitle.applyForCel(fonsSize: 18, fontWeight: .bold)
+        labelTitle.applyForCel(fonsSize: 20, fontWeight: .bold)
         labelTitle.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(labelTitle)
         
         NSLayoutConstraint.activate(
             [
-                labelTitle.topAnchor.constraint(equalTo: contentView.topAnchor),
+                labelTitle.topAnchor.constraint(
+                    equalTo: contentView.topAnchor,
+                    constant: buttonConstraint
+                ),
                 labelTitle.leadingAnchor.constraint(
                     equalTo: contentView.leadingAnchor,
                     constant: horizontalConstraint
@@ -58,7 +63,7 @@ private extension TodoListCell {
         )
         
         // Setting description label
-        labelDescr.applyForCel(fonsSize: 16, fontWeight: .regular)
+        labelDescr.applyForCel(fonsSize: 18, fontWeight: .regular)
         labelDescr.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(labelDescr)
         
@@ -82,7 +87,7 @@ private extension TodoListCell {
         )
         
         // Setting status label
-        labelStatus.applyForCel(fonsSize: 14, fontWeight: .light)
+        labelStatus.applyForCel(fonsSize: 14, fontWeight: .semibold)
         labelStatus.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(labelStatus)
         
@@ -97,6 +102,35 @@ private extension TodoListCell {
                     equalTo: contentView.leadingAnchor,
                     constant: horizontalConstraint
                 ),
+            ]
+        )
+    }
+        
+    func settingButtonSeparator() {
+        buttonSeparator.backgroundColor = .lightGray
+        contentView.addSubview(buttonSeparator)
+        buttonSeparator.translatesAutoresizingMaskIntoConstraints = false
+        
+        let widthView: CGFloat = 0.9
+        let heightView: CGFloat = 1
+        
+        NSLayoutConstraint.activate(
+            [
+                buttonSeparator.widthAnchor.constraint(
+                    equalTo: contentView.widthAnchor,
+                    multiplier: widthView
+                ),
+                
+                buttonSeparator.heightAnchor.constraint(
+                    equalToConstant: heightView
+                ),
+                buttonSeparator.leadingAnchor.constraint(
+                    equalTo: contentView.leadingAnchor,
+                    constant: horizontalConstraint
+                ),
+                buttonSeparator.bottomAnchor.constraint(
+                    equalTo: contentView.bottomAnchor
+                )
             ]
         )
     }

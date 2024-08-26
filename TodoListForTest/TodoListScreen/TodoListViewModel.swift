@@ -15,7 +15,6 @@ struct TodoListViewModel: Hashable, Codable {
 
 // MARK: - Todo
 struct Todo: Hashable, Codable, Identifiable {
-    let uniqId = UUID()
     let id: Int
     var todo: String
     var completed: Bool

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol ITodoListPresenter {
-    func present(items: [Todo])
+    func present(items: [Entity])
     func addTask()
     func editTask(indexPatch: Int)
     func showErrorAlert(text: String)
@@ -21,8 +21,8 @@ final class TodoListPresenter: ITodoListPresenter {
         self.view = view
     }
     
-    func present(items: [Todo]) {
-        view.render(items: items)
+    func present(items: [Entity]) {
+        view.render(items: self.conversion(entity: items))
     }
     
     func addTask() {
@@ -35,6 +35,18 @@ final class TodoListPresenter: ITodoListPresenter {
     
     func showErrorAlert(text: String) {
         self.view.renderAlertError(text: text)
+    }
+    
+    func conversion(entity: [Entity]) -> [Todo] {
+        let todos = entity.map {
+            Todo(
+                id: Int($0.id),
+                todo: $0.todo,
+                completed: $0.completed,
+                userID: 0
+            )
+        }
+        return todos
     }
 
 }

@@ -31,14 +31,13 @@ final class TodoListInteractor: ITodoListInteractor {
     func fetchData() {
         let objects = self.coreManager.fetchItem()
         if objects.isEmpty {
-            dump("Из сети")
             network.fetchDataToDoList { [unowned self] result in
                 switch result {
                 case .success(let data):
                     DispatchQueue.main.async {
                         self.coreManager.addItems(items: data.todos)
                         let items = self.coreManager.fetchItem()
-                        self.presenter.present(items: self.conversion(entity: items))
+                        self.presenter.present(items: items)
                     }
                 case .failure(let error):
                     DispatchQueue.main.async {
@@ -47,30 +46,28 @@ final class TodoListInteractor: ITodoListInteractor {
                 }
             }
         } else {
-            self.presenter.present(items: self.conversion(entity: objects))
+            self.presenter.present(items: objects)
         }
     }
     
     func deleteAll() {
         self.coreManager.deleteAll()
         let objects = self.coreManager.fetchItem()
-        self.presenter.present(items: self.conversion(entity: objects))
+        self.presenter.present(items: objects)
     }
     
     func updateTask(item: Todo, body: String, completed: Bool) {
         self.coreManager.updateItem(item: item, todo: body, completed: completed)
         let objects = self.coreManager.fetchItem()
-        self.presenter.present(items: self.conversion(entity: objects))
+        self.presenter.present(items: objects)
     }
 
-    
     func deleteItem(id: Int) {
         self.coreManager.deleteitem(id: id)
         let objects = self.coreManager.fetchItem()
-        self.presenter.present(items: self.conversion(entity: objects))
+        self.presenter.present(items: objects)
     }
 
-    
     func saveTask(id: Int, body: String) {
         self.coreManager.addItem(
             id: id,
@@ -78,7 +75,7 @@ final class TodoListInteractor: ITodoListInteractor {
             todo: body
         )
         let objects = self.coreManager.fetchItem()
-        self.presenter.present(items: self.conversion(entity: objects))
+        self.presenter.present(items: objects)
     }
     
     func addTask() {
@@ -88,17 +85,4 @@ final class TodoListInteractor: ITodoListInteractor {
     func editTask(indexPatch: Int) {
         self.presenter.editTask(indexPatch: indexPatch)
     }
-
-    func conversion(entity: [Entity]) -> [Todo] {
-        let todos = entity.map {
-            Todo(
-                id: Int($0.id),
-                todo: $0.todo,
-                completed: $0.completed,
-                userID: 0
-            )
-        }
-        return todos
-    }
-
 }

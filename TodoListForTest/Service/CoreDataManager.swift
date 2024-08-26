@@ -9,12 +9,19 @@ import Foundation
 import CoreData
 
 protocol ICoreDataManager {
+    // Load all
     func fetchItem() -> [Entity]
+    // Load one item
     func fetchItemId(id: Int)  -> Entity?
+    // Add items
     func addItems(items: [Todo])
+    // Add one items
     func addItem(id: Int, completed: Bool, todo: String)
+    // Delete all
     func deleteAll()
+    // Delete item by id
     func deleteitem(id: Int)
+    // Update item
     func updateItem(item: Todo, todo: String, completed: Bool)
 }
 
@@ -28,8 +35,6 @@ final class CoreDataManager: ICoreDataManager {
         })
         return container
     }()
-    
-    
     
     private func saveContext () {
         let context = persistentContainer.viewContext

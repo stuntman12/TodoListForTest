@@ -13,10 +13,21 @@ enum Links: String {
     case todo = "https://dummyjson.com/todos"
 }
 
-enum ErrorNetwork: Error {
+enum ErrorNetwork: Error, LocalizedError {
     case notUrl
     case notData
     case errorDecoder
+    
+    var errorDescription: String? {
+        switch self {
+        case .notUrl:
+            return "Не удалось создать ссылку"
+        case .notData:
+            return "Не пришли данные"
+        case .errorDecoder:
+            return "Не удалось декодировать данные"
+        }
+    }
 }
 
 protocol INetworkManager {

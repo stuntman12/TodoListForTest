@@ -10,7 +10,7 @@ import UIKit
 protocol IRouter {
     func startViewController()
     func backView()
-    func showAlertCreateTask()
+    func showAlertErrorLoad(text: String)
 }
 
 final class Router: IRouter {
@@ -31,20 +31,19 @@ final class Router: IRouter {
         navigationController.dismiss(animated: true)
     }
     
-    func showAlertCreateTask() {
+    func showAlertErrorLoad(text: String) {
         let alert = UIAlertController(
-            title: "Создание",
-            message: "Напишите что необходимо сделать",
-            preferredStyle: .alert
+            title: "Ошибка",
+            message: text,
+            preferredStyle: .actionSheet
         )
         
-        let saveButton = UIAlertAction(
-            title: "Создать",
-            style: .default) { _ in
-                
-            }
+        let skipButton = UIAlertAction(
+            title: "Ок",
+            style: .cancel
+        )
         
-        alert.addAction(saveButton)
+        alert.addAction(skipButton)
         
         navigationController.present(alert, animated: true)
     }

@@ -11,6 +11,7 @@ protocol ITodoListPresenter {
     func present(items: [Todo])
     func addTask()
     func editTask(indexPatch: Int)
+    func showErrorAlert(text: String)
 }
 
 final class TodoListPresenter: ITodoListPresenter {
@@ -30,6 +31,10 @@ final class TodoListPresenter: ITodoListPresenter {
     
     func editTask(indexPatch: Int) {
         self.view.editTask(indexPatch: indexPatch)
+    }
+    
+    func showErrorAlert(text: String) {
+        self.view.renderAlertError(text: text)
     }
 
 }

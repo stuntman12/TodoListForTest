@@ -8,7 +8,7 @@
 import XCTest
 @testable import TodoListForTest
 
-class MockInteractor: ITodoListInteractor {
+final class MockInteractor: ITodoListInteractor {
     var presenter: ITodoListPresenter
     
     var todos: [Todo] = []
@@ -61,7 +61,8 @@ class MockInteractor: ITodoListInteractor {
     }
 }
 
-class MockPresenter: ITodoListPresenter {
+final class MockPresenter: ITodoListPresenter {
+    
     var view: ITodoListView
     
     init(view: ITodoListView) {
@@ -73,15 +74,20 @@ class MockPresenter: ITodoListPresenter {
     }
     
     func addTask() {
-        
+        self.view.openAlertCreateTask()
     }
     
     func editTask(indexPatch: Int) {
-        
+        self.view.editTask(indexPatch: indexPatch)
+    }
+    
+    func showErrorAlert(text: String) {
+        // Show error alert load
     }
 }
 
-class MockView: ITodoListView {
+final class MockView: ITodoListView {
+    
     var items: [TodoListForTest.Todo] = []
     
     var interactor: ITodoListInteractor?
@@ -89,16 +95,21 @@ class MockView: ITodoListView {
     init() {
         self.interactor?.fetchData()
     }
+    
     func render(items: [TodoListForTest.Todo]) {
         self.items = items
     }
     
     func openAlertCreateTask() {
-        
+        // Open alert create task
     }
     
     func editTask(indexPatch: Int) {
-        
+        // Open alert edit task
+    }
+    
+    func renderAlertError(text: String) {
+        // Show alerrt error load
     }
 }
 

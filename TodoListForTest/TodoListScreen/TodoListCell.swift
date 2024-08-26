@@ -30,7 +30,6 @@ final class TodoListCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 }
 
 private extension TodoListCell {
@@ -40,6 +39,7 @@ private extension TodoListCell {
     }
     
     func settingLabel() {
+        // Setting Title label
         labelTitle.applyForCel(fonsSize: 18, fontWeight: .bold)
         labelTitle.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(labelTitle)
@@ -57,6 +57,7 @@ private extension TodoListCell {
             ]
         )
         
+        // Setting description label
         labelDescr.applyForCel(fonsSize: 16, fontWeight: .regular)
         labelDescr.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(labelDescr)
@@ -80,7 +81,7 @@ private extension TodoListCell {
             ]
         )
         
-        
+        // Setting status label
         labelStatus.applyForCel(fonsSize: 14, fontWeight: .light)
         labelStatus.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(labelStatus)

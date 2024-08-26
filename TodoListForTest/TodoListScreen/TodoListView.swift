@@ -7,28 +7,33 @@
 
 import UIKit
 
+//MARK: - Protocol View
 protocol ITodoListView {
     func render(items: [Todo])
     func openAlertCreateTask()
     func editTask(indexPatch: Int)
+    func renderAlertError(text: String)
 }
 
-class TodoListView: UIViewController {
+final class TodoListView: UIViewController {
     typealias DataSource = UICollectionViewDiffableDataSource<SectionKind,Todo>
     typealias Snapshot = NSDiffableDataSourceSnapshot<SectionKind, Todo>
     
+    //MARK: Section kind
     enum SectionKind {
         case task
     }
     
     private lazy var collectionView: UICollectionView = createCollectionView()
     private var dataSource: DataSource!
-    private(set) var items: [Todo] = []
     
+    private var items: [Todo] = []
+    
+    //MARK: - Dependencies
     private var router: IRouter?
-    
     var interactor: ITodoListInteractor?
     
+    //MARK: Init
     init(router: IRouter) {
         super.init(nibName: nil, bundle: nil)
         self.router = router
@@ -44,6 +49,7 @@ class TodoListView: UIViewController {
         settingController()
     }
     
+    //MARK: objct func
     @objc func createTask() {
         self.interactor?.addTask()
     }
@@ -71,8 +77,13 @@ extension TodoListView: ITodoListView {
     func editTask(indexPatch: Int) {
         self.showEditAlert(indexPatch: indexPatch)
     }
+    
+    func renderAlertError(text: String) {
+        self.router?.showAlertErrorLoad(text: text)
+    }
 }
 
+//MARK: - UICollectionViewDelegate
 extension TodoListView: UICollectionViewDelegate {
     func collectionView(
         _ collectionView: UICollectionView,
@@ -141,7 +152,7 @@ private extension TodoListView {
         let heightItem: CGFloat = 1
         
         let widthGroup: CGFloat = 1
-        let heightGroup: CGFloat = 0.15
+        let heightGroup: CGFloat = 0.1
         
         let layoutConfiguration = UICollectionViewCompositionalLayoutConfiguration()
         let layout = UICollectionViewCompositionalLayout(sectionProvider: {
@@ -179,8 +190,6 @@ private extension TodoListView {
                 title: itemIdentifier.id.description,
                 status: itemIdentifier.completed
             )
-            
-            
         }
         dataSource = DataSource(
             collectionView: collectionView,
@@ -238,10 +247,10 @@ private extension TodoListView {
         )
         let taskForIndexPatch = self.items[indexPatch]
         
-        let editButton = UIAlertAction(title: "Изменить", style: .default) { [unowned self] textField in
+        let editButton = UIAlertAction(title: "Изменить", style: .default) { [weak self] textField in
             guard let TaskBodyTextField = alert.textFields?.first?.text else { return }
-            self.interactor?.updateTask(item: taskForIndexPatch, body: TaskBodyTextField, completed: taskForIndexPatch.completed)
-            self.interactor?.fetchData()
+            self?.interactor?.updateTask(item: taskForIndexPatch, body: TaskBodyTextField, completed: taskForIndexPatch.completed)
+            self?.interactor?.fetchData()
         }
         
         let completedButton = UIAlertAction(
@@ -261,8 +270,8 @@ private extension TodoListView {
         alert.addAction(deleteButton)
         alert.addAction(editButton)
         alert.addAction(completedButton)
-        alert.addTextField { [unowned self] in
-            $0.text = items[indexPatch].todo
+        alert.addTextField { [weak self] in
+            $0.text = self?.items[indexPatch].todo
         }
         present(alert, animated: true)
     }
